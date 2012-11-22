@@ -1,0 +1,180 @@
+#################################################
+#                                               #
+#     mysql study record                        #
+#                                               #
+#################################################
+1 内置函数   select now(), user(), version(), database(),//时间， 用户 ，版本， 当前数据库
+2 退出执行语句  \c
+3 执行sql文件  source 路径/xx.sql
+4 desc == show column from == explain == show fields from )
+5 show column from 可以加模糊查询 列名 + like
+6 desc 可以加模糊查询 列名 直接 '%xx%'
+7 show databases;查询所有数据库
+8 mysql 有format(xx,3);保留几位
+9 concat (x," ",y)组合两个列
+10 mysql中可以使用year() month() dayofmonth() 来得到datatime类型数据中的值 
+   monthname()可以支持英文
+   curdate();
+   timestampdiff("计算单位可以是 YEAR MONTH DAY","开始时间","结束时间")
+   cross join == inner join == join  (两个表都有才统计)
+   
+###############2012-11-13##############################
+mysql事务支持 start transaction rollback commit
+建表的时候要选择引擎 默认的引擎是不支持事务的(MyISAM MEMORY)    支持事务的引擎（InnDB Falcon）
+
+###############2012-11-14##############################
+mysql varchar(10)超过10就被截取
+存储程序
+1存储函数 stored function
+2存储过程  stored procedure
+3触发器 trigger
+4事件 event
+
+1存储函数 stored function的创建
+因为在函数中使用到";"这个是mysql默认的结束符 所以需要修改结束符  delimiter（定界符） "$" 自定义一个结束符
+create function xxx(xx int)
+   returns varchar(30)定义返回值类型
+   begin  //
+   declare（断言）
+   <!------>
+   end $ //结束
+  delimiter ";"将结束符弄回来
+  
+ 2存储过程  stored procedure（）
+   create procedure
+    call 调用存储过程
+    
+ 3触发器 trigger
+  create trigger "触发器的名字" 
+      (before ,apter)“执行时间” 
+      (insert update delete)“执行条件”
+      on "表名"
+      for each row  
+      begin
+      <!------->
+      end$
+    
+explain (select * from xxx)
+#############################################
+mysql管理 
+1 查看数据位置  linux 
+  show variables like 'datadir';
+  
+  
+####################################################
+mysql 存储函数语句  
+函数 存储过程 都开始于begin 结束于 end （所有操作在begin end块里）
+注意 一定要使用delimiter $ 修改结束符 不然会有错
+
+####################循环##############################
+while循环
+  create procedure test()
+  begin
+  declare v int
+  set v =0;
+  while v < 10 do
+    select * from ss;
+    set v = v + 1;
+    end while;
+ end 
+ -----------------------------
+loop循环
+ create procedure test()
+ begin
+  declare v int
+  set v =0;
+  loop_1:loop
+    select 1;
+    set v = v +1;
+    if v>=5 then
+    leave loop_1; //退出循环
+    end if;
+    end loop;
+    end
+ ---------------------
+ REPEAT循环
+ CREATE PROCEDURE p_repeat() 
+BEGIN 
+    DECLARE v INT; 
+    SET v = 0; 
+    REPEAT 
+        INSERT INTO t VALUES(v); 
+        SET v = v + 1; 
+        UNTIL v>=5 //后面没有分号
+    END REPEAT; 
+END;   
+    
+##########################################################################
+mysql deep study   深入学习mysql 读书笔记《LINUX的mysql数据库编程》
+1存储引擎 ：指mysql中表的类型，（不同的存储机制，索引技术，锁定水平） 指令 show engines 查看数据库支持的引擎
+2_1在创建table的时候可以为table指定引擎如 create table xxx() engine = InnoDB;
+2_2alter table xxx engine = MyISAM 
+ 
+#mysql的引擎
+ 1MyISAM 默认引擎管理非事务表， 不支持事务，外键约束，支持表级锁定 
+ 2InnoDB 支持事务  支持行级锁定 比MyISAM存储时占用更多磁盘空间
+ 3Memory（heap） 非事务，内存中的表 关机后没有数据，零时表   
+ 4BDB 支持事务 没有InnoDB普及 只支持页级锁定
+ 
+ ## 可以使用show variables like 'myisam%' 查看myisam引擎的信息
+ ## 可以使用show table status 查看数据看表以及索引在表空间文件里占用的大小和剩于空间
+ 
+ ###########################################################################
+mysql锁机制
+语法 lock table xxxx locktype
+1 read (只能读不能做其他操作)
+2 read local
+3 write 当前对表可读 可写  其余的进程不能操作
+4 low priority write 允许其他进程先执行读 
+
+##锁分类
+1表级锁定(table-level-locking) 2页级锁定（page-level-locking） 3行级锁定（row-level-locking） 
+#lock table xxxx locktype(read read local write)
+
+1表级锁定  
+指针对数据表进行锁定，优点开销小，加锁块，不会出现死锁，
+                 缺点 范围大 锁冲突概率高 并发低
+       模式1 表共享读锁 : 对MyISAM表读操作时 允许其他进程对同一表读请求 会阻塞写
+                   表独占写锁 ： 对MyISAM表读操作时 阻塞其他进程
+                   #表级锁定优先于页级或行级锁定
+        
+2行级锁定
+指对表中数据记录的锁定，是通过数据记录的索引加锁实现  行级锁发生锁定冲突概率最低，并发性最好，但是行级锁定开销大，加锁慢，会出现死锁。
+
+3页面错的
+ 
+ 
+ 
+##########################################sql 优化问题！效率问题
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+  
+
+
+

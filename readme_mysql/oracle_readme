@@ -1,0 +1,29 @@
+oracle 高级知识
+##########################
+
+1 savepoint 创建保存点
+  savepoint 《save1》
+  rollback to savepoint save1
+
+2 闪回  
+
+#####################pl\sql编程
+pl\sql代码块
+decalre
+    v_width integer;//定义变量
+    v_height integer :=2;//:=变量赋值
+    v_are integer :=6;
+    
+
+xxxxx
+begin
+if <>  then
+xxxxx
+end;
+
+循环loop  
+退出循环 exit when
+end loop
+
+游标
+1声明用于保存列值得变量
