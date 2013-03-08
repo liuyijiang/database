@@ -3,3 +3,9 @@ key declare xx 类型
 存储过程内部参数 需要定义 declare  传入的参数可以直接用
 
 @xx 调用out的存储过程
+
+if() then
+
+elseif() then
+
+else
