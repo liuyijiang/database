@@ -1,1 +1,3 @@
 key declare xx 类型
+
+存储过程内部参数 需要定义 declare  传入的参数可以直接用
