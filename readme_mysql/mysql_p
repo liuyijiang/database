@@ -9,3 +9,19 @@ if() then
 elseif() then
 
 else
+
+
+declare t_name varchar(20);
+declare t_age int(11);
+
+declare dome int default 0;
+declare datas cursor for select name,age from test.t_user;
+declare continue handler for not found set dome=1;
+
+open datas;
+  d_loop:LOOP
+  fetch datas into t_name,t_age;
+  if(dome=1) then
+  leave d_loop;
+  end if;
+  end LOOP d_loop;
