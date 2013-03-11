@@ -28,3 +28,32 @@ open datas;
 
 
 org.springframework.jdbc.core.JdbcTemplate
+
+//这是一个使用游标
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `testf7`()
+BEGIN
+
+declare cp_name varchar(10);
+declare cp_age int;
+declare mes varchar(10);
+declare done int default 0;
+declare curl cursor for select name,age from test.t_user;
+declare continue handler for not found set done=1;
+
+ open curl;
+ 
+u_loop:LOOP
+  fetch curl into cp_name,cp_age;
+   if(done=1) then
+      leave u_loop;
+   else
+     insert into test.t_cp_user values(cp_name,cp_age);
+  end if;
+
+  end LOOP u_loop;   
+
+select mes;
+
+END
