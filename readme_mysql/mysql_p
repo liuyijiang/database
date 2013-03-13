@@ -61,3 +61,11 @@ END
 
 iterate 像continue继续循环（在loop中）
 
+#############################################
+#          repeat nutll 循环
+#
+SET i=0; loop1: REPEAT SET i=i+1; IF MOD(i,2)<>0 THEN /*Even number - try again*/
+MySQL 存储过程编程
+115 / 144
+Select concat(i," is an odd number"); END IF; UNTIL i >= 10 END REPEAT;  
+
