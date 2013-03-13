@@ -42,6 +42,7 @@ declare done int default 0;
 declare curl cursor for select name,age from test.t_user;
 declare continue handler for not found set done=1;
 
+
  open curl;
  
 u_loop:LOOP
@@ -57,3 +58,6 @@ u_loop:LOOP
 select mes;
 
 END
+
+iterate 像continue继续循环（在loop中）
+
