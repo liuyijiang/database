@@ -160,6 +160,40 @@ select id,group_concat(distinct name) from aa group by id;
 
 以id分组，把name字段的值打印在一行，逗号分隔，以name排倒序 
 select id,group_concat(name order by name desc) from aa group by id;
+
+
+######################################################
+#
+#   全文检索
+#
+create table test.websites(
+     wname varchar(200),wdesc text, url varchar(300),
+      FULLTEXT (wname,wdesc,url)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+insert into test.websites
+    values("新坐人w","w新热不能人eb","www.新sina.com");
+
+select * from test.websites where match (wname,wdesc,url) against("w");
+
+
+CREATE TABLE test.articles (
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    title VARCHAR(200),
+    body TEXT,
+    FULLTEXT (title,body)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+INSERT INTO test.articles (title,body) VALUES
+    ('MySQL Tutorial','DBMS stands for DataBase ...'),
+    ('How To Use MySQL Well','After you went through a ...'),
+    ('Optimizing MySQL','In this tutorial we will show ...'),
+    ('1001 MySQL Tricks','1. Never run mysqld as root. 2. ...'),
+    ('MySQL vs. YourSQL','In the following database comparison ...'),
+    ('MySQL Security','When configured properly, MySQL ...');
+
+SELECT * FROM test.articles
+    WHERE MATCH (title,body) AGAINST ('DBMS');
  
  
  
