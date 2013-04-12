@@ -3,3 +3,4 @@
 ifnull（null,0）
 UNIX_TIMESTAMP(now()) //日期转换为long
 group_concat（）
+select * from test.oos order by left(na,1) desc;
