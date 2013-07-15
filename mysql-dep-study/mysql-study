@@ -1,0 +1,9 @@
+1 问题 无法远程连接
+    修改mysql 配置文件 去掉绑定ip 
+  1.1 关闭mysqladmin -u root -p shutdown
+  1.2 修改配置文件  /etc/mysql/my.cnf  注解掉bind-address 127.0.0.1
+  1.3 启动mysql mysqladmin -u root -p start
+  1.4 创建一个可以远程连接的账号 
+      grant all on MogileFS.* to 'mogile'@'%' identified by 'mogile';
+      UPDATE mysql.user SET Password=PASSWORD('newpass') WHERE User='mogile';
+      FLUSH PRIVILEGES;
