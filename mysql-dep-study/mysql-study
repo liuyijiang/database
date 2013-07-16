@@ -11,10 +11,10 @@
 2 mysql ubuntu 主从配置
 2.1 安装mysql (主从版本一致)
 2.2 修改my.cnf vi /etc/mysql/my.cnf 去掉两个注册   log-bin=mysql-bin #slave会基于此log-bin来做replication  
-                                            server-id=1 #master的标示  
+                                            server-id=1 #master的标示 (建议使用ip地址最后一位) 
                                                                                                          可以选择配置需要备份的数据库 binlog_do_db = xxx
 ##注意 启动的时候一定要使用mysqld-safe --defaults-file=/etc/mysql/my.cnf (主备都要使用这种方式启动 不能使用mysqladmin -u root -p start) 
- 
+  
                                                                                                          
 2.3 在 Master 上创建一个专门用于复制的账号 repl_user
     mysql> grant replication slave on *.* to 'repl'@'%' identified by 'repl' #绑定从服务器ip 192.168.2.172
