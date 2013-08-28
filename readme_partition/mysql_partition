@@ -1,0 +1,303 @@
+使用partition水平分区
+######################3
+MySQL5.1中最激动人心的新特性应该就是对水平分区的支持了。这对MySQL的使用者来说确实是个好消息，而且她已经支持分区大部分模式：
+         Range（范围） – 这种模式允许DBA将数据划分不同范围。例如DBA可以将一个表通过年份划分成三个分区，80年代（1980's）的数据，90年代（1990's）的数据以及任何在2000年（包括2000年）后的数据。 
+         Hash（哈希） – 这中模式允许DBA通过对表的一个或多个列的Hash Key进行计算，最后通过这个Hash码不同数值对应的数据区域进行分区，。例如DBA可以建立一个对表主键进行分区的表。 
+         Key（键值） – 上面Hash模式的一种延伸，这里的Hash Key是MySQL系统产生的。 
+         List（预定义列表） – 这种模式允许系统通过DBA定义的列表的值所对应的行数据进行分割。例如：DBA建立了一个横跨三个分区的表，分别根据2004年2005年和2006年值所对应的数据。 
+         Composite（复合模式） - 很神秘吧，哈哈，其实是以上模式的组合使用而已，就不解释了。举例：在初始化已经进行了Range范围分区的表上，我们可以对其中一个分区再进行hash哈希分区。
+    分区带来的好处太多太多了，有多少？俺也不知道，自己猜去吧，要是觉得没有多少就别用，反正俺也不求你用。不过在这里俺强调两点好处：
+    
+ 
+ MYSQL的分区主要有两种形式：水平分区和垂直分区
+
+水平分区（HorizontalPartitioning）
+这种形式的分区是对根据表的行进行分区，通过这样的方式不同分组里面的物理列分割的数据集得以组合，从而进行个体分割（单分区）或集体分割（1个或多个分区）。
+所有在表中定义的列在每个数据集中都能找到，所以表的特性依然得以保持。水平分区一定要通过某个属性列来分割。常见的比如年份，日期等。
+
+垂直分区（VerticalPartitioning）
+
+这种分区方式一般来说是通过对表的垂直划分来减少目标表的宽度，使某些特定的列被划分到特定的分区，每个分区都包含了其中的列所对应所有行。
+可以用  show variables like '%partition%';
+命令查询当前的mysql数据库版本是否支持分区。
+分区的作用：数据库性能的提升和简化数据管理
+在扫描操作中，mysql优化器只扫描保护数据的那个分区以减少扫描范围获得性能的提高。
+分区技术使得数据管理变得简单，删除某个分区不会对另外的分区造成影响，分区有系统直接管理不用手工干预。
+mysql从5.1版本开始支持分区。每个分区的名称是不区分大小写。同个表中的分区表名称要唯一。
+ 
+    
+######   Range（范围） ##########  
+测试sql 
+1创建一个范围分区的表
+CREATE TABLE mytest.part_tab( c1 int default NULL,
+c2 varchar(30) default NULL,c3 date default NULL) engine=myisam
+PARTITION BY RANGE (year(c3)) (PARTITION p0 VALUES LESS THAN (1995),
+PARTITION p1 VALUES LESS THAN (1996) , PARTITION p2 VALUES LESS THAN (1997) ,
+PARTITION p3 VALUES LESS THAN (1998) , PARTITION p4 VALUES LESS THAN (1999) ,
+PARTITION p5 VALUES LESS THAN (2000) , PARTITION p6 VALUES LESS THAN (2001) ,
+PARTITION p7 VALUES LESS THAN (2002) , PARTITION p8 VALUES LESS THAN (2003) ,
+PARTITION p9 VALUES LESS THAN (2004) , PARTITION p10 VALUES LESS THAN (2010),
+PARTITION p11 VALUES LESS THAN MAXVALUE ); 
+
+1创建一个未分区的表
+CREATE TABLE mytest.no_part_tab( c1 int default NULL,
+c2 varchar(30) default NULL,c3 date default NULL) engine=myisam;
+**注意 水平分区的引擎  -》支持所有存储引擎(MyISAM, Archive, InnoDB, 等等) 
+
+3测试查询时间sql
+select count(*) from mytest.no_part_tab where c3 > date '1995-01-01' and c3 < date '1995-12-31';
+select count(*) from mytest.part_tab where c3 > date '1995-01-01' and c3 < date '1995-12-31';
+
+//explain 执行效率可以看到 rows 是全表
+explain select count(*) from 
+   mytest.no_part_tab where c3 > date '1995-01-01' and c3 < date '1995-12-31'; -- 124133
+
+explain select count(*) from 
+   mytest.part_tab where c3 > date '1995-01-01' and c3 < date '1995-12-31'; -- 12388
+
+######   List（范围） ##########  
+create table emp
+(empno  varchar(20) not null ,
+empname varchar(20),
+deptno  int,
+birthdate date not null,
+salary int
+)
+partition by list(deptno)
+(
+partition p1 values in  (10),
+partition p2 values in  (20),
+partition p3 values in  (30)
+);
+
+######### Hash（哈希） #########
+
+3)创建hash分区
+
+HASH分区主要用来确保数据在预先确定数目的分区中平均分布。在RANGE和LIST分区中，必须明确指定一个给定的列值或列值集合应该保存在哪 个分区中；而在HASH分区中，MySQL 自动完成这些工作，你所要做的只是基于将要被哈希的列值指定一个列值或表达式，以及指定被分区的表将要被分割成的分区数量。
+
+create table emp
+(empno varchar(20) not null ,
+empname varchar(20),
+deptno int,
+birthdate date not null,
+salary int
+)
+partition by hash(year(birthdate))
+partitions 4;
+
+4)创建key分区
+
+按照KEY进行分区类似于按照HASH分区，除了HASH分区使用的用户定义的表达式，而KEY分区的哈希函数是由MySQL 服务器提供，服务器使用其自己内部的哈希函数，这些函数是基于与PASSWORD()一样的运算法则。“CREATE TABLE ...PARTITION BY KEY”的语法规则类似于创建一个通过HASH分区的表的规则。它们唯一的区别在于使用的关键字是KEY而不是HASH，并且KEY分区只采用一个或多个 列名的一个列表。
+create table emp
+(empno varchar(20) not null ,
+empname varchar(20),
+deptno int,
+birthdate date not null,
+salary int
+)
+partition by key(birthdate)
+partitions 4;
+
+5)创建复合分区
+
+range - hash(范围哈希)复合分区
+create table emp
+(empno varchar(20) not null ,
+empname varchar(20),
+deptno int,
+birthdate date not null,
+salary int
+)
+partition by range(salary)
+subpartition by hash(year(birthdate))
+subpartitions 3
+(
+partition p1 values less than (2000),
+partition p2 values less than maxvalue
+);
+
+range- key复合分区
+create table emp
+(empno varchar(20) not null ,
+empname varchar(20),
+deptno int,
+birthdate date not null,
+salary int
+)
+partition by range(salary)
+subpartition by key(birthdate)
+subpartitions 3
+(
+partition p1 values less than (2000),
+partition p2 values less than maxvalue
+);
+
+list - hash复合分区
+CREATE TABLE emp (
+empno varchar(20) NOT NULL,
+empname varchar(20) ,
+deptno int,
+birthdate date NOT NULL,
+salary int
+)
+PARTITION BY list (deptno)
+subpartition by hash(year(birthdate))
+subpartitions 3
+(
+PARTITION p1 VALUES in  (10),
+PARTITION p2 VALUES in  (20)
+);
+
+list - key 复合分区
+CREATE TABLE empk (
+empno varchar(20) NOT NULL,
+empname varchar(20) ,
+deptno int,
+birthdate date NOT NULL,
+salary int
+)
+PARTITION BY list (deptno)
+subpartition by key(birthdate)
+subpartitions 3
+(
+PARTITION p1 VALUES in  (10),
+PARTITION p2 VALUES in  (20)
+);
+
+6)分区表的管理操作
+
+删除分区:
+alter table emp drop partition p1;
+不可以删除hash或者key分区。
+一次性删除多个分区，alter table emp drop partition p1,p2;
+
+增加分区:
+alter table emp add partition (partition p3 values less than (4000));
+alter table empl add partition (partition p3 values in (40));
+
+分解分区:
+Reorganizepartition关键字可以对表的部分分区或全部分区进行修改，并且不会丢失数据。分解前后分区的整体范围应该一致。
+alter table te
+reorganize partition p1 into
+(
+partition p1 values less than (100),
+partition p3 values less than (1000)
+); ----不会丢失数据
+
+合并分区:
+Merge分区：把2个分区合并为一个。
+alter table te
+reorganize partition p1,p3 into
+(partition p1 values less than (1000));
+----不会丢失数据
+
+重新定义hash分区表:
+Alter table emp partition by hash(salary)partitions 7;
+----不会丢失数据
+
+重新定义range分区表:
+Alter table emp partitionbyrange(salary)
+(
+partition p1 values less than (2000),
+partition p2 values less than (4000)
+); ----不会丢失数据
+
+删除表的所有分区:
+Alter table emp removepartitioning;--不会丢失数据
+
+重建分区：
+这和先删除保存在分区中的所有记录，然后重新插入它们，具有同样的效果。它可用于整理分区碎片。
+ALTER TABLE emp rebuild partitionp1,p2;
+
+优化分区：
+如果从分区中删除了大量的行，或者对一个带有可变长度的行（也就是说，有VARCHAR，BLOB，或TEXT类型的列）作了许多修改，可以使用“ALTER TABLE ... OPTIMIZE PARTITION”来收回没有使用的空间，并整理分区数据文件的碎片。
+ALTER TABLE emp optimize partition p1,p2;
+
+分析分区：
+读取并保存分区的键分布。
+ALTER TABLE emp analyze partition p1,p2;
+
+修补分区：
+修补被破坏的分区。
+ALTER TABLE emp repairpartition p1,p2;
+
+检查分区：
+可以使用几乎与对非分区表使用CHECK TABLE 相同的方式检查分区。
+ALTER TABLE emp CHECK partition p1,p2;
+这个命令可以告诉你表emp的分区p1,p2中的数据或索引是否已经被破坏。如果发生了这种情况，使用“ALTER TABLE ... REPAIR PARTITION”来修补该分区。
+
+【mysql分区表的局限性】
+1.在5.1版本中分区表对唯一约束有明确的规定，每一个唯一约束必须包含在分区表的分区键（也包括主键约束）。
+
+CREATE TABLE emptt (
+empno varchar(20) NOT NULL  ,
+empname varchar(20)，
+deptno int,
+birthdate date NOT NULL,
+salary int ,
+primary key (empno)
+)
+PARTITION BY range (salary)
+(
+PARTITION p1 VALUES less than (100),
+PARTITION p2 VALUES less than (200)
+);
+
+这样的语句会报错。MySQL Database Error: A PRIMARY KEY must include allcolumns in the table's partitioning function；
+CREATE TABLE emptt (
+empno varchar(20) NOT NULL  ,
+empname varchar(20) ,
+deptno int(11),
+birthdate date NOT NULL,
+salary int(11) ,
+primary key (empno，salary)
+)
+PARTITION BY range (salary)
+(
+PARTITION p1 VALUES less than (100),
+PARTITION p2 VALUES less than (200)
+);
+在主键中加入salary列就正常。
+
+2.MySQL分区处理NULL值的方式
+      如果分区键所在列没有notnull约束。
+      如果是range分区表，那么null行将被保存在范围最小的分区。
+      如果是list分区表，那么null行将被保存到list为0的分区。
+      在按HASH和KEY分区的情况下，任何产生NULL值的表达式mysql都视同它的返回值为0。
+      为了避免这种情况的产生，建议分区键设置成NOT NULL。
+
+
+3.分区键必须是INT类型，或者通过表达式返回INT类型，可以为NULL。唯一的例外是当分
+     区类型为KEY分区的时候，可以使用其他类型的列作为分区键（ BLOB or TEXT 列除外）。
+
+
+4.对分区表的分区键创建索引，那么这个索引也将被分区,分区键没有全局索引一说。
+
+
+5.只有RANG和LIST分区能进行子分区，HASH和KEY分区不能进行子分区。
+
+
+6.临时表不能被分区。
+
+四、获取Mysql分区表信息的几种方法
+
+1.show create table 表名
+可以查看创建分区表的create语句
+
+2.show table status
+可以查看表是不是分区表
+
+3.查看information_schema.partitions表
+select
+  partition_name part,
+  partition_expression expr,
+  partition_description descr,
+  table_rows
+from information_schema.partitions  where
+  table_schema = schema()
+  and table_name='test';
+可以查看表具有哪几个分区、分区的方法、分区中数据的记录数等信息
+
+4.explain partitions select语句
+通过此语句来显示扫描哪些分区，及他们是如何使用的.
