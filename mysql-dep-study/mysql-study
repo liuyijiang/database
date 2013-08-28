@@ -1,39 +1,39 @@
-1 ÎÊÌâ ÎŞ·¨Ô¶³ÌÁ¬½Ó
-    ĞŞ¸Ämysql ÅäÖÃÎÄ¼ş È¥µô°ó¶¨ip 
-  1.1 ¹Ø±Õmysqladmin -u root -p shutdown
-  1.2 ĞŞ¸ÄÅäÖÃÎÄ¼ş  /etc/mysql/my.cnf  ×¢½âµôbind-address 127.0.0.1
-  1.3 Æô¶¯mysql mysqladmin -u root -p start
-  1.4 ´´½¨Ò»¸ö¿ÉÒÔÔ¶³ÌÁ¬½ÓµÄÕËºÅ 
+1 é—®é¢˜ æ— æ³•è¿œç¨‹è¿æ¥
+    ä¿®æ”¹mysql é…ç½®æ–‡ä»¶ å»æ‰ç»‘å®šip
+  1.1 å…³é—­mysqladmin -u root -p shutdown
+  1.2 ä¿®æ”¹é…ç½®æ–‡ä»¶ /etc/mysql/my.cnf æ³¨è§£æ‰bind-address 127.0.0.1
+  1.3 å¯åŠ¨mysql mysqladmin -u root -p start
+  1.4 åˆ›å»ºä¸€ä¸ªå¯ä»¥è¿œç¨‹è¿æ¥çš„è´¦å·
       grant all on MogileFS.* to 'mogile'@'%' identified by 'mogile';
       UPDATE mysql.user SET Password=PASSWORD('newpass') WHERE User='mogile';
       FLUSH PRIVILEGES;
 #############################################
-2 mysql ubuntu Ö÷´ÓÅäÖÃ
-2.1 °²×°mysql (Ö÷´Ó°æ±¾Ò»ÖÂ)
-2.2 ĞŞ¸Ämy.cnf vi /etc/mysql/my.cnf È¥µôÁ½¸ö×¢²á   log-bin=mysql-bin #slave»á»ùÓÚ´Ëlog-binÀ´×öreplication  
-                                            server-id=1 #masterµÄ±êÊ¾ (½¨ÒéÊ¹ÓÃipµØÖ·×îºóÒ»Î») 
-                                                                                                         ¿ÉÒÔÑ¡ÔñÅäÖÃĞèÒª±¸·İµÄÊı¾İ¿â binlog_do_db = xxx
-##×¢Òâ Æô¶¯µÄÊ±ºòÒ»¶¨ÒªÊ¹ÓÃmysqld-safe --defaults-file=/etc/mysql/my.cnf (Ö÷±¸¶¼ÒªÊ¹ÓÃÕâÖÖ·½Ê½Æô¶¯ ²»ÄÜÊ¹ÓÃmysqladmin -u root -p start) 
+2 mysql ubuntu ä¸»ä»é…ç½®
+2.1 å®‰è£…mysql (ä¸»ä»ç‰ˆæœ¬ä¸€è‡´)
+2.2 ä¿®æ”¹my.cnf vi /etc/mysql/my.cnf å»æ‰ä¸¤ä¸ªæ³¨å†Œ log-bin=mysql-bin #slaveä¼šåŸºäºæ­¤log-binæ¥åšreplication
+                                            server-id=1 #masterçš„æ ‡ç¤º (å»ºè®®ä½¿ç”¨ipåœ°å€æœ€åä¸€ä½)
+                                                                                                         å¯ä»¥é€‰æ‹©é…ç½®éœ€è¦å¤‡ä»½çš„æ•°æ®åº“ binlog_do_db = xxx
+##æ³¨æ„ å¯åŠ¨çš„æ—¶å€™ä¸€å®šè¦ä½¿ç”¨mysqld-safe --defaults-file=/etc/mysql/my.cnf (ä¸»å¤‡éƒ½è¦ä½¿ç”¨è¿™ç§æ–¹å¼å¯åŠ¨ ä¸èƒ½ä½¿ç”¨mysqladmin -u root -p start)
   
                                                                                                          
-2.3 ÔÚ Master ÉÏ´´½¨Ò»¸ö×¨ÃÅÓÃÓÚ¸´ÖÆµÄÕËºÅ repl_user
-    mysql> grant replication slave on *.* to 'repl'@'%' identified by 'repl' #°ó¶¨´Ó·şÎñÆ÷ip 192.168.2.172
+2.3 åœ¨ Master ä¸Šåˆ›å»ºä¸€ä¸ªä¸“é—¨ç”¨äºå¤åˆ¶çš„è´¦å· repl_user
+    mysql> grant replication slave on *.* to 'repl'@'%' identified by 'repl' #ç»‘å®šä»æœåŠ¡å™¨ip 192.168.2.172
     mysql> UPDATE mysql.user SET Password=PASSWORD('newpass') WHERE User='mogile';
     mysql> FLUSH PRIVILEGES;
     mysql> use mysql
     mysql> select host,user,password,from user;
     
-2.4 ĞèÒª²é¿´ Master ÖĞµÄ  Master status
+2.4 éœ€è¦æŸ¥çœ‹ Master ä¸­çš„ Master status
     mysql> show master status;
-    #¼Ç×¡ file ºÍ position ÔÚÅäÖÃslaveµÄÊ±ºòÓĞÓÃ  
+    #è®°ä½ file å’Œ position åœ¨é…ç½®slaveçš„æ—¶å€™æœ‰ç”¨
     
-2.5 ÅäÖÃslave    
+2.5 é…ç½®slave
    mysql > slave stop
    mysql > change master to master_host='192.168.2.114',
-        -> master_user='repl_user', # ¸´ÖÆÓÃ»§ÕËºÅ
-        -> master_password='copy', # ¸´ÖÆÓÃ»§ÃÜÂë
-        -> master_log_file='mysql-bin.000001', # ÏÈÇ°show master status file
-        -> master_log_pos=34307; #  ÏÈÇ°show master status  position   
+        -> master_user='repl_user', # å¤åˆ¶ç”¨æˆ·è´¦å·
+        -> master_password='copy', # å¤åˆ¶ç”¨æˆ·å¯†ç 
+        -> master_log_file='mysql-bin.000001', # å…ˆå‰show master status file
+        -> master_log_pos=34307; # å…ˆå‰show master status position
            
            
-²Î¿¼×ÊÁÏhttp://pengranxiang.iteye.com/blog/1141118   
+å‚è€ƒèµ„æ–™http://pengranxiang.iteye.com/blog/1141118 

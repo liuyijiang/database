@@ -1,0 +1,4 @@
+查看表引擎
+SHOW CREATE TABLE （表名）
+查看表状态
+show table status like '表名'
