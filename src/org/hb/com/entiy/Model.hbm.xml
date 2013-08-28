@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+ <class name="org.hb.com.entiy.Model" table="model">
+   <id name="id" column="ID" type="integer">
+      <generator class="increment" />     
+   </id>
+  <property name="name" column="modelname" type="string"/>
+<!--    <property name="type" > -->
+<!--             <column name="modetype" not-null="true" /> -->
+<!--             <type name="org.hibernate.type.EnumType">          -->
+<!--             <param name="enumClass">org.hb.com.base.ModelType</param>       -->
+<!--             <param name="type">12</param>  -->
+<!--         </type>    -->
+<!--    </property>  -->
+  
+   <property name="date" column="workdata" type="date"/>
+ </class>
+</hibernate-mapping>

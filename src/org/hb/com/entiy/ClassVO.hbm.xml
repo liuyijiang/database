@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+ <class name="org.hb.com.entiy.ClassVO" table="t_class">
+   <id name="id" column="ID" type="integer">
+      <generator class="increment" />     
+   </id>
+  <property name="name" column="name" type="string"/>
+  
+  <!-- 一对多 -->
+  <set name="students"  inverse="true" cascade="all" > <!-- 实体类中集合  -->
+    <key column="cid"/> <!-- 多的一边对应少的一边的id -->
+    <one-to-many class="org.hb.com.entiy.Student"/> <!-- 多的一边实体类 -->
+  </set>
+  
+ </class>
+</hibernate-mapping>

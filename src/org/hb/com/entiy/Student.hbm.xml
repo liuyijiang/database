@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+          "-//Hibernate/Hibernate mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+ <class name="org.hb.com.entiy.Student" table="t_student">
+   <id name="id" column="ID" type="integer">
+      <generator class="increment" />     
+   </id>
+	  <property name="name" column="name" type="string"/>
+	  <property name="keyNumber" column="keynumber" type="string"/>
+	  <property name="age" column="age" type="integer"/>
+<!-- 	  <property name="cid" column="cid" type="integer"/> -->
+	  <property name="sid" column="sid" type="integer"/>
+	  <!-- 多对一 在多的一边维护 -->
+	   <many-to-one name="cvo" class="org.hb.com.entiy.ClassVO" cascade="none" >
+            <column name="cid" />  
+        </many-to-one>
+ </class>
+</hibernate-mapping>

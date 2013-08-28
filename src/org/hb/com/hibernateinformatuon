@@ -1,0 +1,32 @@
+1  hibernate原理 ； 讲述下hibernate是怎么一步一步加载的
+读取配置文件  读取映射信息  create sessionfactory  open session  trancartion
+comint  close session
+
+2 hibernate的优点
+  开源免费   封装jdbc  优秀的orm实现  使用反射机制实现透明度
+  
+4 hibernate延迟加载
+
+  比如load 查询的时候数据并没有在内存中而是当真正操作数据的时候才加载
+  
+5 hibernate缓存机制 （）
+http://baike.baidu.com/view/2273788.htm
+Hibernate的一级缓存是内置缓存，不能通过程序代码或者配置人为取消取消，
+一级缓存是事务级别的缓存，事务结束缓存中的所有数据失效。使用一级缓存可以在一个事务中减少查询和更新数据表的操作
+ 
+ 
+6 hibernate优化 
+  a.建索引
+
+　　b.减少表之间的关联
+
+　　c.优化sql，尽量让sql很快定位数据，不要让sql做全表查询，应该走索引,把数据量大的表排在前面
+
+　　d.简化查询字段，没用的字段不要，已经对返回结果的控制，尽量返回少量数据
+
+7hibernate中一对多 多对一配置
+
+8 hibernate数据状态（游离  持久）
+
+
+hibnerate 多对一 (http://blog.sina.com.cn/s/blog_5116fe410100dy3u.html  http://www.vijun.com/web/hibernate/2012/05/5f84f4d9370c64cb01375dcd1fc000c4.html)
