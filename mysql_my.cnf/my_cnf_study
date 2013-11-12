@@ -1,0 +1,7 @@
+ .frm  描述表结构的文件
+
+ .MYD 是表的数据文件
+
+ .MYI  是表数据文件中任何索引的数据树
+
+ .opt  储存一些选项数据如字符集如default-character-set之类
