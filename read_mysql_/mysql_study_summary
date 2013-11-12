@@ -2,3 +2,14 @@
 SHOW CREATE TABLE （表名）
 查看表状态
 show table status like '表名'
+
+##########################################
+   mysql教程
+1 一些函数
+  now() user() version() 
+  select database();//当前使用数据
+  DATE_ADD(date,INTERVAL expr type);//日期加 date 参数是合法的日期表达式。expr 参数是您希望添加的时间间隔。type 参数可以是下列值：
+  
+  
+  
+  
