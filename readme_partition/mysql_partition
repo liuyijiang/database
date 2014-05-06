@@ -31,7 +31,8 @@ mysql从5.1版本开始支持分区。每个分区的名称是不区分大小写
 1创建一个范围分区的表
 CREATE TABLE mytest.part_tab( c1 int default NULL,
 c2 varchar(30) default NULL,c3 date default NULL) engine=myisam
-PARTITION BY RANGE (year(c3)) (PARTITION p0 VALUES LESS THAN (1995),
+PARTITION BY RANGE (year(c3)) 
+(PARTITION p0 VALUES LESS THAN (1995),
 PARTITION p1 VALUES LESS THAN (1996) , PARTITION p2 VALUES LESS THAN (1997) ,
 PARTITION p3 VALUES LESS THAN (1998) , PARTITION p4 VALUES LESS THAN (1999) ,
 PARTITION p5 VALUES LESS THAN (2000) , PARTITION p6 VALUES LESS THAN (2001) ,
@@ -74,7 +75,9 @@ partition p3 values in  (30)
 
 3)创建hash分区
 
-HASH分区主要用来确保数据在预先确定数目的分区中平均分布。在RANGE和LIST分区中，必须明确指定一个给定的列值或列值集合应该保存在哪 个分区中；而在HASH分区中，MySQL 自动完成这些工作，你所要做的只是基于将要被哈希的列值指定一个列值或表达式，以及指定被分区的表将要被分割成的分区数量。
+HASH分区主要用来确保数据在预先确定数目的分区中平均分布。在RANGE和LIST分区中，
+必须明确指定一个给定的列值或列值集合应该保存在哪 个分区中；而在HASH分区中，MySQL 自动完成这些工作，
+你所要做的只是基于将要被哈希的列值指定一个列值或表达式，以及指定被分区的表将要被分割成的分区数量。
 
 create table emp
 (empno varchar(20) not null ,
@@ -88,7 +91,11 @@ partitions 4;
 
 4)创建key分区
 
-按照KEY进行分区类似于按照HASH分区，除了HASH分区使用的用户定义的表达式，而KEY分区的哈希函数是由MySQL 服务器提供，服务器使用其自己内部的哈希函数，这些函数是基于与PASSWORD()一样的运算法则。“CREATE TABLE ...PARTITION BY KEY”的语法规则类似于创建一个通过HASH分区的表的规则。它们唯一的区别在于使用的关键字是KEY而不是HASH，并且KEY分区只采用一个或多个 列名的一个列表。
+按照KEY进行分区类似于按照HASH分区，除了HASH分区使用的用户定义的表达式，
+而KEY分区的哈希函数是由MySQL 服务器提供，服务器使用其自己内部的哈希函数，
+这些函数是基于与PASSWORD()一样的运算法则。
+“CREATE TABLE ...PARTITION BY KEY”的语法规则类似于创建一个通过HASH分区的表的规则。
+它们唯一的区别在于使用的关键字是KEY而不是HASH，并且KEY分区只采用一个或多个 列名的一个列表。
 create table emp
 (empno varchar(20) not null ,
 empname varchar(20),
