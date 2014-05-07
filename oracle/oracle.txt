@@ -1,0 +1,7 @@
+oracle 毫秒转日期函数
+
+create or replace
+function ms_to_date(ms in number) return varchar2 is
+begin
+  return  to_char(to_date('1970-01-01 08:00:00','yyyy-MM-dd hh24:mi:ss') + ms / 86400000 , 'yyyy-mm-dd hh24:mi:ss');
+end ms_to_date;
